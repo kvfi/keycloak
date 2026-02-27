@@ -1,7 +1,8 @@
 package org.keycloak.testsuite.broker;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Test;
+import java.util.Collections;
+import java.util.List;
+
 import org.keycloak.admin.client.resource.IdentityProviderResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.broker.saml.mappers.UsernameTemplateMapper;
@@ -12,8 +13,8 @@ import org.keycloak.representations.idm.IdentityProviderRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.testsuite.Assert;
 
-import java.util.Collections;
-import java.util.List;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
 
 import static org.keycloak.testsuite.broker.BrokerTestTools.getConsumerRoot;
 import static org.keycloak.testsuite.broker.BrokerTestTools.waitForPage;
