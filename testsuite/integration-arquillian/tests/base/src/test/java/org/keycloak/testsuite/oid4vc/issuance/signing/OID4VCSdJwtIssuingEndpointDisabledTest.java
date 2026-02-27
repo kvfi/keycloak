@@ -6,6 +6,8 @@ import jakarta.ws.rs.core.Response;
 
 import org.keycloak.protocol.oid4vc.issuance.OID4VCIssuerEndpoint;
 import org.keycloak.protocol.oid4vc.model.CredentialRequest;
+import org.keycloak.representations.idm.ClientRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.services.CorsErrorResponseException;
 import org.keycloak.services.managers.AppAuthManager;
 import org.keycloak.testsuite.Assert;
@@ -22,7 +24,12 @@ import static org.junit.Assert.assertEquals;
 public class OID4VCSdJwtIssuingEndpointDisabledTest extends OID4VCIssuerEndpointTest {
 
     @Override
-    protected boolean shouldEnableOid4vci() {
+    protected boolean shouldEnableOid4vci(RealmRepresentation testRealm) {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldEnableOid4vci(ClientRepresentation testClient) {
         return false;
     }
 
@@ -35,7 +42,7 @@ public class OID4VCSdJwtIssuingEndpointDisabledTest extends OID4VCIssuerEndpoint
 
             // Test getCredentialOfferURI
             CorsErrorResponseException offerUriException = Assert.assertThrows(CorsErrorResponseException.class, () ->
-                    issuerEndpoint.getCredentialOfferURI("test-credential")
+                    issuerEndpoint.createCredentialOffer("test-credential")
             );
             assertEquals("Should fail with 403 Forbidden when client is not OID4VCI-enabled",
                     Response.Status.FORBIDDEN.getStatusCode(), offerUriException.getResponse().getStatus());

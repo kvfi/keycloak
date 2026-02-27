@@ -28,7 +28,7 @@ import org.keycloak.provider.ProviderEvent;
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
  * @version $Revision: 1 $
  */
-public interface GroupModel extends RoleMapperModel {
+public interface GroupModel extends RoleMapperModel, Model {
 
     enum Type {
         REALM(0),
@@ -341,4 +341,9 @@ public interface GroupModel extends RoleMapperModel {
     default Type getType() {
         return Type.REALM;
     }
+
+    /**
+     * @return Organization this group belongs to, or null if the group is of {@link Type#REALM}.
+     */
+    OrganizationModel getOrganization();
 }

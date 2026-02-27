@@ -48,13 +48,13 @@ public final class PropertyMappers {
     private final static List<PropertyMapperGrouping> GROUPINGS;
     static {
         GROUPINGS = List.of(new CachingPropertyMappers(), new DatabasePropertyMappers(),
-                new ConfigKeystorePropertyMappers(), new EventPropertyMappers(), new ClassLoaderPropertyMappers(),
+                new ConfigKeystorePropertyMappers(), new EventPropertyMappers(),
                 new ExportPropertyMappers(), new BootstrapAdminPropertyMappers(), new HostnameV2PropertyMappers(),
                 new HttpPropertyMappers(), new HttpAccessLogPropertyMappers(), new HealthPropertyMappers(),
                 new FeaturePropertyMappers(), new ImportPropertyMappers(), new ManagementPropertyMappers(),
                 new MetricsPropertyMappers(), new OpenApiPropertyMappers(), new LoggingPropertyMappers(), new ProxyPropertyMappers(),
                 new VaultPropertyMappers(), new TracingPropertyMappers(), new TransactionPropertyMappers(),
-                new SecurityPropertyMappers(), new TruststorePropertyMappers());
+                new SecurityPropertyMappers(), new TruststorePropertyMappers(), new TelemetryPropertyMappers());
     }
 
     public static List<PropertyMapperGrouping> getPropertyMapperGroupings() {
@@ -75,13 +75,13 @@ public final class PropertyMappers {
     public static ConfigValue getValue(ConfigSourceInterceptorContext context, String name) {
         PropertyMapper<?> mapper = getMapper(name);
 
-        // During re-aug do not resolve server runtime properties and avoid they included by quarkus in the default value config source.
+        // During re-aug do not resolve server runtime properties and avoid including in the quarkus default value config source.
         //
         // The special handling of log properties is because some logging runtime properties are requested during build time
         // and we need to resolve them. That should be fine as they are generally not considered security sensitive.
         // If however expressions are not enabled that means quarkus is specifically looking for runtime defaults, and we should not provide a value
         // See https://github.com/quarkusio/quarkus/pull/42157
-        if (isRebuild() && isKeycloakRuntime(name, mapper)
+        if ((isRebuild() || Boolean.getBoolean(Environment.KC_TEST_REBUILD)) && isKeycloakRuntime(name, mapper)
                 && (NestedPropertyMappingInterceptor.getResolvingRoot().or(() -> Optional.of(name))
                         .filter(n -> n.startsWith("quarkus.log.") || n.startsWith("quarkus.console.")).isEmpty()
                         || !Expressions.isEnabled())) {
@@ -195,8 +195,12 @@ public final class PropertyMappers {
         return MAPPERS.getWildcardMappers();
     }
 
-    public static WildcardPropertyMapper<?> getWildcardMappedFrom(Option<?> from) {
-        return MAPPERS.wildcardConfig.wildcardMapFrom.get(from.getKey());
+    public static List<WildcardPropertyMapper<?>> getWildcardsMappedFrom(Option<?> from) {
+        var result = MAPPERS.wildcardConfig.wildcardMapFrom.get(from.getKey());
+        if (result == null) {
+            return List.of();
+        }
+        return result;
     }
 
     public static boolean isSupported(PropertyMapper<?> mapper) {
@@ -372,11 +376,11 @@ public final class PropertyMappers {
      */
     private static class WildcardMappersConfig {
         private final Set<WildcardPropertyMapper<?>> wildcardMappers = new HashSet<>();
-        private final Map<String, WildcardPropertyMapper<?>> wildcardMapFrom = new HashMap<>();
+        private final MultivaluedHashMap<String, WildcardPropertyMapper<?>> wildcardMapFrom = new MultivaluedHashMap<>();
 
         public void addMapper(WildcardPropertyMapper<?> mapper) {
             if (mapper.getMapFrom() != null) {
-                wildcardMapFrom.put(mapper.getMapFrom(), mapper);
+                wildcardMapFrom.add(mapper.getMapFrom(), mapper);
             }
             wildcardMappers.add(mapper);
         }

@@ -63,7 +63,7 @@ public class OID4VCTypeMapper extends OID4VCMapper {
      */
     @Override
     public boolean includeInMetadata() {
-        return Optional.ofNullable(mapperModel.getConfig().get(CredentialScopeModel.INCLUDE_IN_METADATA))
+        return Optional.ofNullable(mapperModel.getConfig().get(CredentialScopeModel.VC_INCLUDE_IN_METADATA))
                        .map(Boolean::parseBoolean)
                        .orElse(false);
     }
@@ -73,8 +73,8 @@ public class OID4VCTypeMapper extends OID4VCMapper {
         return List.of("type");
     }
 
-    public void setClaimsForCredential(VerifiableCredential verifiableCredential,
-                                       UserSessionModel userSessionModel) {
+    public void setClaim(VerifiableCredential verifiableCredential,
+                         UserSessionModel userSessionModel) {
         // remove duplicates
         Set<String> types = new HashSet<>();
         if (verifiableCredential.getType() != null) {
@@ -85,7 +85,7 @@ public class OID4VCTypeMapper extends OID4VCMapper {
     }
 
     @Override
-    public void setClaimsForSubject(Map<String, Object> claims, UserSessionModel userSessionModel) {
+    public void setClaim(Map<String, Object> claims, UserSessionModel userSessionModel) {
         // nothing to do for the mapper.
     }
 

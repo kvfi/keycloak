@@ -66,7 +66,12 @@ class BuildCommandDistTest {
     @Test
     @Launch({ "build", "--db=postgres", "--db-username=myuser", "--db-password=mypassword", "--http-enabled=true" })
     void testIgnoreRuntimeOptions(CLIResult cliResult) {
-        cliResult.assertMessage("The following run time options were found, but will be ignored during build time: kc.db-username, kc.http-enabled, kc.db-password");
+        String output = cliResult.getOutput();
+        assertTrue(output.contains("The following run time options were found, but will be ignored during build time:"));
+        assertTrue(output.contains("kc.db-username"));
+        assertTrue(output.contains("kc.http-enabled"));
+        assertTrue(output.contains("kc.db-password"));
+        assertTrue(output.contains("kc.shutdown-delay"));
         cliResult.assertBuild();
     }
 
@@ -120,5 +125,19 @@ class BuildCommandDistTest {
     @Launch({"-Dquarkus.launch.rebuild=true"})
     void forceRebuild(CLIResult cliResult) {
         cliResult.getOutput().contains("Quarkus augmentation completed");
+    }
+
+    @Test
+    @RawDistOnly(reason = "Containers are immutable")
+    @Launch({"build", "--features=clusterless"})
+    void clusterlessDoesNotRequireRuntimeOptions(CLIResult cliResult) {
+        cliResult.assertBuild();
+    }
+
+    @Test
+    @RawDistOnly(reason = "Containers are immutable")
+    @Launch({"build", "--features=multi-site"})
+    void multiSiteDoesNotRequireRuntimeOptions(CLIResult cliResult) {
+        cliResult.assertBuild();
     }
 }

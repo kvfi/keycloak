@@ -68,6 +68,8 @@ public interface Errors {
     String INVALID_FORM = "invalid_form";
     String INVALID_CONFIG = "invalid_config";
     String EXPIRED_CODE = "expired_code";
+    String MISSING_TX_CODE = "missing_tx_code";
+    String INVALID_TX_CODE = "invalid_tx_code";
     String INVALID_INPUT = "invalid_input";
     String COOKIE_NOT_FOUND = "cookie_not_found";
     String ALREADY_LOGGED_IN = "already_logged_in";
@@ -103,6 +105,9 @@ public interface Errors {
     String INVALID_CODE_CHALLENGE_METHOD = "invalid_code_challenge_method";
 
     String INVALID_DPOP_PROOF = "invalid_dpop_proof";
+
+    // https://datatracker.ietf.org/doc/html/rfc9396#name-authorization-error-respons
+    String INVALID_AUTHORIZATION_DETAILS = "invalid_authorization_details";
 
     String NOT_LOGGED_IN = "not_logged_in";
     String UNKNOWN_IDENTITY_PROVIDER = "unknown_identity_provider";

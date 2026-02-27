@@ -642,12 +642,12 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
 
     @Override
     public CibaConfig getCibaPolicy() {
-        return new CibaConfig(this);
+        return CibaConfig.fromModel(this);
     }
 
     @Override
     public ParConfig getParPolicy() {
-        return new ParConfig(this);
+        return ParConfig.fromModel(this);
     }
 
     @Override
@@ -1309,6 +1309,16 @@ public class RealmAdapter implements StorageProviderRealmModel, JpaModel<RealmEn
     @Override
     public void setVerifiableCredentialsEnabled(boolean verifiableCredentialsEnabled) {
         setAttribute(RealmAttributes.VERIFIABLE_CREDENTIALS_ENABLED, verifiableCredentialsEnabled);
+    }
+
+    @Override
+    public void setScimEnabled(boolean enabled) {
+        setAttribute(RealmAttributes.SCIM_ENABLED, enabled);
+    }
+
+    @Override
+    public boolean isScimEnabled() {
+        return getAttribute(RealmAttributes.SCIM_ENABLED, Boolean.FALSE);
     }
 
     @Override

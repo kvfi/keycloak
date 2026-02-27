@@ -125,6 +125,10 @@
             <groupId>io.opentelemetry.instrumentation</groupId>
             <artifactId>opentelemetry-apache-httpclient-4.3</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-opentelemetry</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>com.apicatalog</groupId>
@@ -135,22 +139,10 @@
             <artifactId>rdf-urdna</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
-        </dependency>
-
         <!-- Hibernate validator -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-validator</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish.expressly</groupId>
-                    <artifactId>expressly</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- SmallRye -->
@@ -441,6 +433,37 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-scim-services</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-scim-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-scim-model</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Keycloak Dependencies-->
         <dependency>
             <groupId>org.jboss.logging</groupId>
@@ -673,16 +696,6 @@
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-component-annotations</artifactId>
             <scope>provided</scope>
-        </dependency>
-        <!-- required for query/search in the external Infinispan server -->
-        <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-remote-query-client</artifactId>
-        </dependency>
-        <!-- to be removed after https://issues.redhat.com/browse/ISPN-16220 -->
-        <dependency>
-            <groupId>org.infinispan</groupId>
-            <artifactId>infinispan-query-dsl</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>

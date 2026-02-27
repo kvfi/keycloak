@@ -26,7 +26,7 @@ import static org.keycloak.common.util.UriUtils.checkUrl;
 /**
  * @author Pedro Igor
  */
-public class OIDCIdentityProviderConfig extends OAuth2IdentityProviderConfig implements JWTAuthorizationGrantConfig {
+public class OIDCIdentityProviderConfig extends OAuth2IdentityProviderConfig implements JWTAuthorizationGrantConfig, IssuerValidation {
 
     public static final String JWKS_URL = "jwksUrl";
 
@@ -35,6 +35,7 @@ public class OIDCIdentityProviderConfig extends OAuth2IdentityProviderConfig imp
     public static final String IS_ACCESS_TOKEN_JWT = "isAccessTokenJWT";
     public static final String SUPPORTS_CLIENT_ASSERTIONS = "supportsClientAssertions";
     public static final String SUPPORTS_CLIENT_ASSERTION_REUSE = "supportsClientAssertionReuse";
+    public static final String ALLOW_CLIENT_ID_AS_AUDIENCE = "allowClientIdAsAudience";
 
     public OIDCIdentityProviderConfig(IdentityProviderModel identityProviderModel) {
         super(identityProviderModel);
@@ -153,6 +154,14 @@ public class OIDCIdentityProviderConfig extends OAuth2IdentityProviderConfig imp
         return Boolean.parseBoolean(getConfig().get(SUPPORTS_CLIENT_ASSERTION_REUSE));
     }
 
+    public boolean isAllowClientIdAsAudience() {
+        return Boolean.parseBoolean(getConfig().getOrDefault(ALLOW_CLIENT_ID_AS_AUDIENCE, "false"));
+    }
+
+    public void setAllowClientIdAsAudience(boolean allowClientIdAsAudience) {
+        getConfig().put(ALLOW_CLIENT_ID_AS_AUDIENCE, String.valueOf(allowClientIdAsAudience));
+    }
+
     @Override
     public void validate(RealmModel realm) {
         super.validate(realm);
@@ -171,6 +180,9 @@ public class OIDCIdentityProviderConfig extends OAuth2IdentityProviderConfig imp
             } else if (getPublicKeySignatureVerifier() == null) {
                 throw new IllegalArgumentException(String.format("The 'Validating public key' is required when '%s' enabled and 'Use JWKS URL' disabled", optionText));
             }
+        }
+        if (isJWTAuthorizationGrantEnabled() || isSupportsClientAssertions()) {
+            validateIssuer(realm);
         }
     }
 }

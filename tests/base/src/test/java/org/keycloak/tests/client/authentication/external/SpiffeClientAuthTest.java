@@ -46,7 +46,7 @@ public class SpiffeClientAuthTest extends AbstractBaseClientAuthTest {
     TimeOffSet timeOffSet;
 
     public SpiffeClientAuthTest() {
-        super(null, INTERNAL_CLIENT_ID, EXTERNAL_CLIENT_ID);
+        super(null, INTERNAL_CLIENT_ID, EXTERNAL_CLIENT_ID, IDP_ALIAS);
     }
 
     @Test
@@ -65,7 +65,7 @@ public class SpiffeClientAuthTest extends AbstractBaseClientAuthTest {
 
     @Test
     public void testInvalidTrustDomain() {
-        realm.updateIdentityProviderWithCleanup(IDP_ALIAS, rep -> {
+        realm.updateIdentityProvider(IDP_ALIAS, rep -> {
             rep.getConfig().put(SpiffeIdentityProviderConfig.TRUST_DOMAIN_KEY, "spiffe://different-domain");
         });
 
@@ -109,6 +109,11 @@ public class SpiffeClientAuthTest extends AbstractBaseClientAuthTest {
     @Override
     protected String getClientAssertionType() {
         return SpiffeConstants.CLIENT_ASSERTION_TYPE;
+    }
+
+    @Override
+    public ManagedRealm getRealm() {
+        return realm;
     }
 
     public static class SpiffeServerConfig extends ClientAuthIdpServerConfig {

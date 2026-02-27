@@ -64,7 +64,7 @@ public class OID4VCGeneratedIdMapper extends OID4VCMapper {
      */
     @Override
     public boolean includeInMetadata() {
-        return Optional.ofNullable(mapperModel.getConfig().get(CredentialScopeModel.INCLUDE_IN_METADATA))
+        return Optional.ofNullable(mapperModel.getConfig().get(CredentialScopeModel.VC_INCLUDE_IN_METADATA))
                        .map(Boolean::parseBoolean)
                        .orElse(false);
     }
@@ -77,13 +77,13 @@ public class OID4VCGeneratedIdMapper extends OID4VCMapper {
         return ListUtils.union(getAttributePrefix(), List.of(property));
     }
 
-    public void setClaimsForCredential(VerifiableCredential verifiableCredential,
-                                       UserSessionModel userSessionModel) {
+    public void setClaim(VerifiableCredential verifiableCredential,
+                         UserSessionModel userSessionModel) {
         // nothing to do for the mapper.
     }
 
     @Override
-    public void setClaimsForSubject(Map<String, Object> claims, UserSessionModel userSessionModel) {
+    public void setClaim(Map<String, Object> claims, UserSessionModel userSessionModel) {
         // Assign a generated ID
         List<String> attributePath = getMetadataAttributePath();
         String propertyName = attributePath.get(attributePath.size() - 1);

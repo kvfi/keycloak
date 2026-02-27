@@ -196,6 +196,7 @@ public class ModelToRepresentation {
         REALM_EXCLUDED_ATTRIBUTES.add("verifiableCredentialsEnabled");
         REALM_EXCLUDED_ATTRIBUTES.add("adminPermissionsEnabled");
         REALM_EXCLUDED_ATTRIBUTES.add("adminPermissionsClientId");
+        REALM_EXCLUDED_ATTRIBUTES.add("scimEnabled");
     }
 
     public static Set<String> CLIENT_EXCLUDED_ATTRIBUTES = new HashSet<>();
@@ -221,22 +222,25 @@ public class ModelToRepresentation {
         rep.setPath(buildGroupPath(group));
         rep.setParentId(group.getParentId());
         if (!full) return rep;
-        // Role mappings
-        Set<RoleModel> roles = group.getRoleMappingsStream().collect(Collectors.toSet());
-        List<String> realmRoleNames = new ArrayList<>();
-        Map<String, List<String>> clientRoleNames = new HashMap<>();
-        for (RoleModel role : roles) {
-            if (role.getContainer() instanceof RealmModel) {
-                realmRoleNames.add(role.getName());
-            } else {
-                ClientModel client = (ClientModel)role.getContainer();
-                String clientId = client.getClientId();
-                List<String> currentClientRoles = clientRoleNames.computeIfAbsent(clientId, k -> new ArrayList<>());
-                currentClientRoles.add(role.getName());
+
+        if (GroupModel.Type.REALM.equals(group.getType())) {
+            // Role mappings
+            Set<RoleModel> roles = group.getRoleMappingsStream().collect(Collectors.toSet());
+            List<String> realmRoleNames = new ArrayList<>();
+            Map<String, List<String>> clientRoleNames = new HashMap<>();
+            for (RoleModel role : roles) {
+                if (role.getContainer() instanceof RealmModel) {
+                    realmRoleNames.add(role.getName());
+                } else {
+                    ClientModel client = (ClientModel) role.getContainer();
+                    String clientId = client.getClientId();
+                    List<String> currentClientRoles = clientRoleNames.computeIfAbsent(clientId, k -> new ArrayList<>());
+                    currentClientRoles.add(role.getName());
+                }
             }
+            rep.setRealmRoles(realmRoleNames);
+            rep.setClientRoles(clientRoleNames);
         }
-        rep.setRealmRoles(realmRoleNames);
-        rep.setClientRoles(clientRoleNames);
         Map<String, List<String>> attributes = group.getAttributes();
         rep.setAttributes(attributes);
         return rep;
@@ -506,6 +510,7 @@ public class ModelToRepresentation {
         rep.setOrganizationsEnabled(realm.isOrganizationsEnabled());
         rep.setAdminPermissionsEnabled(realm.isAdminPermissionsEnabled());
         rep.setVerifiableCredentialsEnabled(realm.isVerifiableCredentialsEnabled());
+        rep.setScimEnabled(realm.isScimEnabled());
         rep.setDefaultSignatureAlgorithm(realm.getDefaultSignatureAlgorithm());
         rep.setRevokeRefreshToken(realm.isRevokeRefreshToken());
         rep.setRefreshTokenMaxReuse(realm.getRefreshTokenMaxReuse());
